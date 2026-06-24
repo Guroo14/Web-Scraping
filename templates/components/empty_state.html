@@ -1,0 +1,12 @@
+<section class="empty-state text-center">
+  <div class="empty-icon">&loz;</div>
+  <h2 class="h3">No catalog data yet</h2>
+  <p class="text-secondary mx-auto">
+    Run the crawler to index {{ target_site }} into SQLite, then refresh this storefront to browse the generated catalog.
+  </p>
+  <form action="{{ url_for('admin_crawl') }}" method="post" class="d-inline-flex gap-2 align-items-center">
+    <input type="number" min="10" max="1000" name="max_pages" value="150" class="form-control" aria-label="Maximum pages">
+    <button class="btn btn-dark rounded-pill px-4" type="submit">Crawl now</button>
+  </form>
+  <p class="small text-secondary mt-3 mb-0">CLI alternative: <code>python crawler.py --max-pages 250</code></p>
+</section>

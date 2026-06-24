@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.title }} | Karma Catalog{% endblock %}
+
+{% block content %}
+  <section class="product-detail-shell">
+    <div class="container-xxl">
+      {% include "components/breadcrumbs.html" %}
+      <div class="row g-5 mt-2">
+        <div class="col-lg-7">
+          <div class="gallery">
+            {% set gallery_images = product.images if product.images else [{'url': product.primary_image, 'alt': product.title}] %}
+            <div class="gallery-main">
+              {% if gallery_images and gallery_images[0].url %}
+                <img id="galleryMain" src="{{ gallery_images[0].url }}" alt="{{ gallery_images[0].alt or product.title }}">
+              {% else %}
+                <div class="image-placeholder large">No image available</div>
+              {% endif %}
+            </div>
+            {% if gallery_images|length > 1 %}
+              <div class="gallery-thumbs" aria-label="Product image gallery">
+                {% for image in gallery_images %}
+                  <button type="button" class="thumb {% if loop.first %}active{% endif %}" data-gallery-src="{{ image.url }}" aria-label="Show image {{ loop.index }}">
+                    <img src="{{ image.url }}" alt="{{ image.alt or product.title }}" loading="lazy">
+                  </button>
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+        </div>
+        <div class="col-lg-5">
+          <div class="product-info-card">
+            {% if product.vendor %}
+              <p class="eyebrow">{{ product.vendor }}</p>
+            {% endif %}
+            <h1 class="display-6 fw-bold">{{ product.title }}</h1>
+            <div class="product-detail-price">
+              {{ product.price|money(product.currency) }}
+              {% if product.compare_at_price %}
+                <span>{{ product.compare_at_price|money(product.currency) }}</span>
+              {% endif %}
+            </div>
+            {% if product.availability %}
+              <p class="stock-line">{{ product.availability }}</p>
+            {% endif %}
+            <div class="d-grid gap-3 my-4">
+              <button class="btn btn-dark btn-lg rounded-pill" type="button">Add to cart</button>
+              {% if product.url %}
+                <a class="btn btn-outline-secondary btn-lg rounded-pill" href="{{ product.url }}" rel="nofollow noopener" target="_blank">View source product</a>
+              {% endif %}
+            </div>
+            {% if product.description %}
+              <div class="product-description">
+                <h2 class="h5">Details</h2>
+                <p>{{ product.description }}</p>
+              </div>
+            {% endif %}
+            <dl class="product-meta">
+              {% if product.sku %}
+                <div><dt>SKU</dt><dd>{{ product.sku }}</dd></div>
+              {% endif %}
+              {% for category in product.categories %}
+                <div>
+                  <dt>Collection</dt>
+                  <dd><a href="{{ url_for('category', slug=category.slug) }}">{{ category.name }}</a></dd>
+                </div>
+              {% endfor %}
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {% if related_products %}
+    <section class="container-xxl py-5">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Recommended</p>
+          <h2>Related products</h2>
+        </div>
+      </div>
+      <div class="product-grid related-grid">
+        {% for product in related_products %}
+          {% include "components/product_card.html" %}
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+{% endblock %}

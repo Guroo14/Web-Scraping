@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Karma Catalog | Premium e-commerce index{% endblock %}
+
+{% block content %}
+  <section class="hero-section">
+    <div class="container-xxl">
+      <div class="row align-items-center g-5">
+        <div class="col-lg-7">
+          <p class="eyebrow">Crawled premium catalog</p>
+          <h1 class="display-3 fw-bold">A modern storefront generated from Karma Items.</h1>
+          <p class="lead text-secondary">
+            Browse discovered categories, collections, product relationships, breadcrumbs, and search results from the local SQLite index.
+          </p>
+          <div class="d-flex flex-wrap gap-3 mt-4">
+            <a class="btn btn-dark btn-lg rounded-pill px-4" href="{{ url_for('search') }}">Shop all products</a>
+            {% if root_categories %}
+              <a class="btn btn-outline-secondary btn-lg rounded-pill px-4" href="{{ url_for('category', slug=root_categories[0].slug) }}">Explore collections</a>
+            {% endif %}
+          </div>
+        </div>
+        <div class="col-lg-5">
+          <div class="hero-card">
+            <div>
+              <span class="stat-number">{{ catalog_stats.products }}</span>
+              <span class="stat-label">Products indexed</span>
+            </div>
+            <div>
+              <span class="stat-number">{{ catalog_stats.categories }}</span>
+              <span class="stat-label">Collections mapped</span>
+            </div>
+            <div>
+              <span class="stat-number">{{ catalog_stats.pages }}</span>
+              <span class="stat-label">Pages crawled</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="container-xxl py-5">
+    {% if not products["items"] %}
+      {% include "components/empty_state.html" %}
+    {% else %}
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Featured</p>
+          <h2>Latest indexed products</h2>
+        </div>
+        <a href="{{ url_for('search') }}" class="btn btn-outline-secondary rounded-pill">View all</a>
+      </div>
+      <div class="product-grid">
+        {% for product in products["items"] %}
+          {% include "components/product_card.html" %}
+        {% endfor %}
+      </div>
+    {% endif %}
+  </section>
+
+  {% if root_categories %}
+    <section class="container-xxl pb-5">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Collections</p>
+          <h2>Shop by discovered hierarchy</h2>
+        </div>
+      </div>
+      <div class="collection-grid">
+        {% for category in root_categories[:12] %}
+          <a class="collection-tile" href="{{ url_for('category', slug=category.slug) }}">
+            <span>{{ category.name }}</span>
+            <small>Browse collection</small>
+          </a>
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+{% endblock %}

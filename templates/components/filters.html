@@ -1,0 +1,33 @@
+<form class="filter-panel" method="get">
+  <div class="row g-3 align-items-end">
+    <div class="col-12 col-lg-4">
+      <label class="form-label" for="q">Search</label>
+      <input id="q" class="form-control" name="q" value="{{ active_filters.query or '' }}" placeholder="Bracelet, crystal, necklace...">
+    </div>
+    <div class="col-6 col-lg-2">
+      <label class="form-label" for="min_price">Min price</label>
+      <input id="min_price" class="form-control" name="min_price" inputmode="decimal" value="{{ request.args.get('min_price', '') }}" placeholder="{{ price_bounds.min or 0 }}">
+    </div>
+    <div class="col-6 col-lg-2">
+      <label class="form-label" for="max_price">Max price</label>
+      <input id="max_price" class="form-control" name="max_price" inputmode="decimal" value="{{ request.args.get('max_price', '') }}" placeholder="{{ price_bounds.max or '' }}">
+    </div>
+    <div class="col-12 col-lg-2">
+      <label class="form-label" for="sort">Sort</label>
+      <select id="sort" class="form-select" name="sort">
+        {% for value, label in [
+          ('featured', 'Featured'),
+          ('newest', 'Newest'),
+          ('price-asc', 'Price: low to high'),
+          ('price-desc', 'Price: high to low'),
+          ('title-asc', 'A-Z')
+        ] %}
+          <option value="{{ value }}" {% if active_filters.sort == value %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-12 col-lg-2 d-grid">
+      <button class="btn btn-dark btn-lg rounded-pill" type="submit">Apply filters</button>
+    </div>
+  </div>
+</form>

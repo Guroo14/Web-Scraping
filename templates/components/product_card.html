@@ -1,0 +1,28 @@
+<article class="product-card h-100">
+  <a class="product-image-wrap" href="{{ url_for('product', slug=product.slug) }}" aria-label="View {{ product.title }}">
+    {% if product.primary_image %}
+      <img src="{{ product.primary_image }}" alt="{{ product.title }}" loading="lazy">
+    {% else %}
+      <div class="image-placeholder">No image</div>
+    {% endif %}
+  </a>
+  <div class="product-card-body">
+    <div class="d-flex justify-content-between gap-3 align-items-start">
+      <h3 class="product-card-title">
+        <a href="{{ url_for('product', slug=product.slug) }}">{{ product.title }}</a>
+      </h3>
+      {% if product.availability %}
+        <span class="stock-pill">{{ product.availability }}</span>
+      {% endif %}
+    </div>
+    {% if product.vendor %}
+      <p class="text-secondary small mb-2">{{ product.vendor }}</p>
+    {% endif %}
+    <div class="product-price">
+      {{ product.price|money(product.currency) }}
+      {% if product.compare_at_price %}
+        <span>{{ product.compare_at_price|money(product.currency) }}</span>
+      {% endif %}
+    </div>
+  </div>
+</article>

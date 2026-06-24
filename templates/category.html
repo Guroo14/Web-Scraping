@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}{{ category.name }} | Karma Catalog{% endblock %}
+
+{% block content %}
+  <section class="collection-hero">
+    <div class="container-xxl">
+      {% include "components/breadcrumbs.html" %}
+      <div class="row align-items-end g-4 mt-3">
+        <div class="col-lg-8">
+          <p class="eyebrow">Collection</p>
+          <h1 class="display-5 fw-bold">{{ category.name }}</h1>
+          {% if category.description %}
+            <p class="lead text-secondary">{{ category.description }}</p>
+          {% else %}
+            <p class="lead text-secondary">Products and sub-collections discovered through the crawl path for this category.</p>
+          {% endif %}
+        </div>
+        <div class="col-lg-4 text-lg-end">
+          <span class="badge rounded-pill text-bg-light">{{ products.total }} products</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="container-xxl py-5">
+    {% if children %}
+      <div class="collection-grid compact mb-5">
+        {% for child in children %}
+          <a class="collection-tile" href="{{ url_for('category', slug=child.slug) }}">
+            <span>{{ child.name }}</span>
+            <small>Sub-collection</small>
+          </a>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <div class="catalog-layout">
+      {% include "components/sidebar.html" %}
+      <div>
+        {% include "components/filters.html" %}
+        {% if products["items"] %}
+          <div class="result-meta">
+            Showing {{ products["items"]|length }} of {{ products.total }} products
+          </div>
+          <div class="product-grid">
+            {% for product in products["items"] %}
+              {% include "components/product_card.html" %}
+            {% endfor %}
+          </div>
+          {% include "components/pagination.html" %}
+        {% else %}
+          <div class="empty-state small-state">
+            <h2 class="h4">No products match these filters</h2>
+            <p class="text-secondary">Try clearing price limits or search terms.</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </section>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Search | Karma Catalog{% endblock %}
+
+{% block content %}
+  <section class="collection-hero">
+    <div class="container-xxl">
+      <div class="row align-items-end g-4">
+        <div class="col-lg-8">
+          <p class="eyebrow">Search</p>
+          <h1 class="display-5 fw-bold">Find products across the indexed catalog.</h1>
+          <p class="lead text-secondary">Search titles, descriptions, and vendors while filtering by price and sort order.</p>
+        </div>
+        <div class="col-lg-4 text-lg-end">
+          <span class="badge rounded-pill text-bg-light">{{ products.total }} results</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="container-xxl py-5">
+    <div class="catalog-layout">
+      {% include "components/sidebar.html" %}
+      <div>
+        {% include "components/filters.html" %}
+        {% if products["items"] %}
+          <div class="result-meta">
+            Showing {{ products["items"]|length }} of {{ products.total }} results
+            {% if active_filters.query %}for "{{ active_filters.query }}"{% endif %}
+          </div>
+          <div class="product-grid">
+            {% for product in products["items"] %}
+              {% include "components/product_card.html" %}
+            {% endfor %}
+          </div>
+          {% include "components/pagination.html" %}
+        {% elif catalog_stats.products == 0 %}
+          {% include "components/empty_state.html" %}
+        {% else %}
+          <div class="empty-state small-state">
+            <h2 class="h4">No results found</h2>
+            <p class="text-secondary">Try a broader search term or remove price filters.</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </section>
+{% endblock %}

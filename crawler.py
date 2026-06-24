@@ -8,6 +8,7 @@ from collections import deque
 from dataclasses import dataclass
 from typing import Any
 from urllib.parse import urljoin, urlparse
+from xml.etree import ElementTree
 
 from bs4 import BeautifulSoup
 from playwright.async_api import BrowserContext, Page, TimeoutError as PlaywrightTimeoutError, async_playwright
@@ -144,16 +145,26 @@ class SiteCrawler:
         except Exception:
             return []
 
-        soup = BeautifulSoup(text, "xml")
         urls: list[str] = []
-        for loc in soup.select("loc"):
-            url = normalize_url(loc.get_text(strip=True), self.base_url)
+        for raw_url in self._sitemap_locations(text):
+            url = normalize_url(raw_url, self.base_url)
             path = urlparse(url).path
             if not same_site(url, self.base_url):
                 continue
             if any(part in path for part in ("/products/", "/collections/", "/pages/")) or path in ("", "/"):
                 urls.append(url)
         return urls
+
+    def _sitemap_locations(self, text: str) -> list[str]:
+        try:
+            root = ElementTree.fromstring(text)
+        except ElementTree.ParseError:
+            return []
+        locations: list[str] = []
+        for element in root.iter():
+            if element.tag.rsplit("}", 1)[-1].lower() == "loc" and element.text:
+                locations.append(element.text.strip())
+        return locations
 
     async def _index_shopify_products_json(self, context: BrowserContext, conn: Any) -> int:
         products_url = urljoin(self.base_url, "/products.json?limit=250")

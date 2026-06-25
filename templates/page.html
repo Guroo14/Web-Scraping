@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page.title if page else site_name }}{% endblock %}
+
+{% block content %}
+  <section class="page-hero">
+    <p class="eyebrow">Page</p>
+    <h1>{{ page.title if page else site_name }}</h1>
+    {% if page and page.meta.description %}<p>{{ page.meta.description }}</p>{% endif %}
+  </section>
+
+  {% if banners %}
+    <section class="banner-strip">
+      {% for banner in banners[:3] %}
+        <a class="banner-tile" href="{{ local_url(banner.link_url) if banner.link_url else '#' }}" {% if banner.image_url %}style="background-image: url('{{ asset_url(banner.image_url) }}')"{% endif %}>
+          <span>{{ banner.title or banner.subtitle or "Featured" }}</span>
+        </a>
+      {% endfor %}
+    </section>
+  {% endif %}
+
+  <section class="section page-content">
+    {% if page.local_html %}
+      <details>
+        <summary>Original captured page structure</summary>
+        <iframe class="captured-page-frame" title="{{ page.title }}" srcdoc="{{ page.local_html|e }}"></iframe>
+      </details>
+    {% endif %}
+
+    {% if page.content.sections %}
+      <div class="content-sections">
+        {% for section in page.content.sections %}
+          {% if section.text %}
+            <article>
+              <h2>{{ section.id or section.classes|join(' ') or section.tag|title }}</h2>
+              <p>{{ section.text }}</p>
+            </article>
+          {% endif %}
+        {% endfor %}
+      </div>
+    {% else %}
+      <p>{{ page.text_content }}</p>
+    {% endif %}
+  </section>
+{% endblock %}

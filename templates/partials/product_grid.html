@@ -1,0 +1,34 @@
+{% if products %}
+  <div class="product-grid">
+    {% for product in products %}
+      <article class="product-card">
+        <a class="product-image" href="{{ product.local_path }}">
+          {% if product.primary_image %}
+            <img src="{{ product.primary_image }}" alt="{{ product.name }}" loading="lazy">
+          {% else %}
+            <span class="image-placeholder">{{ product.name[:1] }}</span>
+          {% endif %}
+          {% if product.discount %}<span class="badge">{{ product.discount }}</span>{% endif %}
+        </a>
+        <div class="product-card-body">
+          <h3><a href="{{ product.local_path }}">{{ product.name }}</a></h3>
+          {% if product.rating or product.reviews_count %}
+            <p class="rating">
+              {% if product.rating %}<span>{{ product.rating }}</span>{% endif %}
+              {% if product.reviews_count %}<span>({{ product.reviews_count }})</span>{% endif %}
+            </p>
+          {% endif %}
+          <p class="price-line">
+            {% if product.compare_at_price %}<span class="compare-price">{{ product.compare_at_price }}</span>{% endif %}
+            {% if product.price %}<span class="price">{{ product.price }}</span>{% endif %}
+          </p>
+          {% if product.availability %}<p class="availability">{{ product.availability }}</p>{% endif %}
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="empty-state">
+    <p>No products have been scraped for this page yet. Run <code>python app.py scrape</code> to populate the clone.</p>
+  </div>
+{% endif %}

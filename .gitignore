@@ -1,0 +1,13 @@
+__pycache__/
+*.py[cod]
+.venv/
+
+data/*.db
+data/pages/
+
+static/assets/
+static/css/downloaded/
+static/fonts/
+static/images/*
+static/js/downloaded/
+!static/images/.gitkeep

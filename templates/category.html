@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}{{ (category.name if category else page.title) if page or category else "Collection" }}{% endblock %}
+
+{% block content %}
+  <section class="collection-hero">
+    <div>
+      <p class="eyebrow">Collection</p>
+      <h1>{{ category.name if category else page.title if page else slug|replace('-', ' ')|title }}</h1>
+      {% if page and page.meta.description %}
+        <p>{{ page.meta.description }}</p>
+      {% elif page and page.text_content %}
+        <p>{{ page.text_content[:240] }}{% if page.text_content|length > 240 %}...{% endif %}</p>
+      {% endif %}
+    </div>
+    {% if category and category.image %}
+      <img src="{{ category.image }}" alt="{{ category.name }}">
+    {% endif %}
+  </section>
+
+  {% if banners %}
+    <section class="banner-strip">
+      {% for banner in banners[:2] %}
+        <a class="banner-tile" href="{{ local_url(banner.link_url) if banner.link_url else '#' }}" {% if banner.image_url %}style="background-image: url('{{ asset_url(banner.image_url) }}')"{% endif %}>
+          <span>{{ banner.title or banner.subtitle or "Featured collection" }}</span>
+        </a>
+      {% endfor %}
+    </section>
+  {% endif %}
+
+  <section class="section">
+    <div class="section-heading split">
+      <div>
+        <p class="eyebrow">Products</p>
+        <h2>{{ products|length }} item{{ '' if products|length == 1 else 's' }}</h2>
+      </div>
+      <a class="text-link" href="/">Back to home</a>
+    </div>
+    {% include "partials/product_grid.html" %}
+  </section>
+
+  {% if page and page.content.sections %}
+    <section class="section content-sections">
+      {% for section in page.content.sections[:8] %}
+        {% if section.text %}
+          <article>
+            <h2>{{ section.id or section.classes|join(' ') or section.tag|title }}</h2>
+            <p>{{ section.text }}</p>
+          </article>
+        {% endif %}
+      {% endfor %}
+    </section>
+  {% endif %}
+{% endblock %}

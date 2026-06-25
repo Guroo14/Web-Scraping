@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page.title if page else site_name }}{% endblock %}
+
+{% block content %}
+  <section class="hero-section">
+    {% if banners %}
+      {% for banner in banners[:3] %}
+        <article class="hero-card" {% if banner.image_url %}style="background-image: linear-gradient(rgba(0,0,0,.28), rgba(0,0,0,.28)), url('{{ asset_url(banner.image_url) }}')"{% endif %}>
+          <div>
+            <p class="eyebrow">Karma Items</p>
+            <h1>{{ banner.title or page.title or site_name }}</h1>
+            {% if banner.subtitle %}<p>{{ banner.subtitle }}</p>{% endif %}
+            {% if banner.link_url %}<a class="button" href="{{ local_url(banner.link_url) }}">Shop now</a>{% endif %}
+          </div>
+        </article>
+      {% endfor %}
+    {% else %}
+      <article class="hero-card">
+        <div>
+          <p class="eyebrow">Karma Items</p>
+          <h1>{{ page.title if page else "Spiritual jewelry and mindful gifts" }}</h1>
+          <p>Browse the locally cloned collections, products, and pages captured by the scraper.</p>
+          <a class="button" href="/collections/best-sellers">Shop best sellers</a>
+        </div>
+      </article>
+    {% endif %}
+  </section>
+
+  <section class="section">
+    <div class="section-heading">
+      <p class="eyebrow">Collections</p>
+      <h2>Shop by category</h2>
+    </div>
+    <div class="category-grid">
+      {% for category in categories %}
+        <a class="category-card" href="{{ category.local_path }}">
+          {% if category.image %}
+            <img src="{{ category.image }}" alt="{{ category.name }}">
+          {% endif %}
+          <span>{{ category.name }}</span>
+        </a>
+      {% else %}
+        <a class="category-card" href="/collections/best-sellers"><span>Best Sellers</span></a>
+        <a class="category-card" href="/collections/mala-necklace-collection"><span>Mala Necklaces</span></a>
+        <a class="category-card" href="/collections/bracelet-collection"><span>Bracelets</span></a>
+        <a class="category-card" href="/collections/pendant-necklaces"><span>Pendant Necklaces</span></a>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-heading">
+      <p class="eyebrow">Featured</p>
+      <h2>Popular products</h2>
+    </div>
+    {% include "partials/product_grid.html" %}
+  </section>
+
+  {% if page and page.content.sections %}
+    <section class="section content-sections">
+      {% for section in page.content.sections[:6] %}
+        <article>
+          <h2>{{ section.id or section.classes|join(' ') or section.tag|title }}</h2>
+          <p>{{ section.text }}</p>
+        </article>
+      {% endfor %}
+    </section>
+  {% endif %}
+{% endblock %}

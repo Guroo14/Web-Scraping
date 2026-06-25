@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.name if product else page.title }}{% endblock %}
+
+{% block content %}
+  {% if product %}
+    <section class="product-detail">
+      <div class="product-gallery">
+        {% if product.local_images %}
+          <img class="product-main-image" src="{{ product.local_images[0] }}" alt="{{ product.name }}">
+          {% if product.local_images|length > 1 %}
+            <div class="thumbnail-row">
+              {% for image in product.local_images[:6] %}
+                <img src="{{ image }}" alt="{{ product.name }} thumbnail {{ loop.index }}" loading="lazy">
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% else %}
+          <div class="product-main-image placeholder">{{ product.name[:1] }}</div>
+        {% endif %}
+      </div>
+      <div class="product-info">
+        <p class="eyebrow">Product</p>
+        <h1>{{ product.name }}</h1>
+        {% if product.rating or product.reviews_count %}
+          <p class="rating">
+            {% if product.rating %}<span>{{ product.rating }}</span>{% endif %}
+            {% if product.reviews_count %}<span>({{ product.reviews_count }})</span>{% endif %}
+          </p>
+        {% endif %}
+        <p class="price-line large">
+          {% if product.compare_at_price %}<span class="compare-price">{{ product.compare_at_price }}</span>{% endif %}
+          {% if product.price %}<span class="price">{{ product.price }}</span>{% endif %}
+        </p>
+        {% if product.discount %}<p class="discount">{{ product.discount }}</p>{% endif %}
+        {% if product.availability %}<p class="availability">{{ product.availability }}</p>{% endif %}
+        {% if product.description %}
+          <div class="product-description">{{ product.description }}</div>
+        {% elif page and page.text_content %}
+          <div class="product-description">{{ page.text_content[:1200] }}</div>
+        {% endif %}
+        <button class="button add-to-cart" type="button">Add to cart</button>
+      </div>
+    </section>
+  {% elif page %}
+    <section class="section">
+      <h1>{{ page.title }}</h1>
+      <p>{{ page.text_content }}</p>
+    </section>
+  {% endif %}
+
+  {% if related_products %}
+    <section class="section">
+      <div class="section-heading">
+        <p class="eyebrow">You may also like</p>
+        <h2>Related products</h2>
+      </div>
+      {% set products = related_products %}
+      {% include "partials/product_grid.html" %}
+    </section>
+  {% endif %}
+{% endblock %}

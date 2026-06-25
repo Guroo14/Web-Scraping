@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}{{ page.title if page else site_name }}{% endblock %}</title>
+    {% if page and page.meta %}
+      {% for name, content in page.meta.items() %}
+        {% if name.startswith('og:') or name.startswith('twitter:') %}
+          <meta property="{{ name }}" content="{{ content }}">
+        {% elif not name.startswith('link:') %}
+          <meta name="{{ name }}" content="{{ content }}">
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/site.css') }}">
+    {% for css_path in downloaded_css %}
+      <link rel="stylesheet" href="{{ css_path }}">
+    {% endfor %}
+    <script src="{{ url_for('static', filename='js/navigation.js') }}" defer></script>
+  </head>
+  <body class="clone-body {{ 'page-' ~ page.page_type if page else '' }}">
+    <a class="skip-link" href="#main-content">Skip to content</a>
+
+    <header class="site-header">
+      <div class="announcement-bar">
+        <span>Free shipping offers and product availability are recreated from the scraped storefront.</span>
+      </div>
+      <div class="header-inner">
+        <button class="mobile-menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-menu">
+          <span></span><span></span><span></span>
+          <span class="visually-hidden">Open menu</span>
+        </button>
+        <a class="brand" href="/">
+          <span class="brand-mark">K</span>
+          <span class="brand-name">{{ site_name }}</span>
+        </a>
+        <nav class="desktop-nav" aria-label="Primary navigation">
+          <ul>
+            {% for item in header_nav %}
+              <li class="nav-item {% if item.children %}has-dropdown{% endif %}">
+                <a href="{{ local_url(item.local_path) }}">{{ item.label }}</a>
+                {% if item.children %}
+                  <button class="dropdown-toggle" type="button" aria-expanded="false">+</button>
+                  <ul class="dropdown-menu">
+                    {% for child in item.children %}
+                      <li><a href="{{ local_url(child.local_path) }}">{{ child.label }}</a></li>
+                    {% endfor %}
+                  </ul>
+                {% endif %}
+              </li>
+            {% else %}
+              <li><a href="/">Home</a></li>
+              <li><a href="/collections/best-sellers">Best Sellers</a></li>
+              <li><a href="/collections/mala-necklace-collection">Mala Necklaces</a></li>
+              <li><a href="/collections/bracelet-collection">Bracelets</a></li>
+              <li><a href="/collections/pendant-necklaces">Pendant Necklaces</a></li>
+              <li><a href="/collections/spiritual-artefacts">Spiritual Artifacts</a></li>
+              <li><a href="/apps/trackingmore">Track Your Order</a></li>
+            {% endfor %}
+          </ul>
+        </nav>
+        <form class="header-search" action="/search" method="get">
+          <label class="visually-hidden" for="site-search">Search</label>
+          <input id="site-search" name="q" type="search" placeholder="Search products">
+          <button type="submit">Search</button>
+        </form>
+      </div>
+      <nav id="mobile-menu" class="mobile-nav" aria-label="Mobile navigation" hidden>
+        <ul>
+          {% for item in header_nav %}
+            <li>
+              <a href="{{ local_url(item.local_path) }}">{{ item.label }}</a>
+              {% if item.children %}
+                <ul>
+                  {% for child in item.children %}
+                    <li><a href="{{ local_url(child.local_path) }}">{{ child.label }}</a></li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            </li>
+          {% else %}
+            <li><a href="/">Home</a></li>
+            <li><a href="/collections/best-sellers">Best Sellers</a></li>
+            <li><a href="/collections/mala-necklace-collection">Mala Necklaces</a></li>
+            <li><a href="/collections/bracelet-collection">Bracelets</a></li>
+            <li><a href="/collections/pendant-necklaces">Pendant Necklaces</a></li>
+            <li><a href="/collections/spiritual-artefacts">Spiritual Artifacts</a></li>
+            <li><a href="/apps/trackingmore">Track Your Order</a></li>
+          {% endfor %}
+        </ul>
+      </nav>
+    </header>
+
+    {% if page and page.breadcrumbs %}
+      <nav class="breadcrumbs" aria-label="Breadcrumb">
+        <ol>
+          {% for crumb in page.breadcrumbs %}
+            <li>
+              {% if crumb.local_path %}
+                <a href="{{ local_url(crumb.local_path) }}">{{ crumb.label }}</a>
+              {% else %}
+                <span>{{ crumb.label }}</span>
+              {% endif %}
+            </li>
+          {% endfor %}
+        </ol>
+      </nav>
+    {% endif %}
+
+    <main id="main-content">
+      {% block content %}{% endblock %}
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-grid">
+        <section>
+          <h2>{{ site_name }}</h2>
+          <p>Locally recreated storefront content captured from Karma Items.</p>
+        </section>
+        <section>
+          <h2>Shop</h2>
+          <ul>
+            {% for category in global_categories %}
+              <li><a href="{{ category.local_path }}">{{ category.name }}</a></li>
+            {% else %}
+              <li><a href="/collections/best-sellers">Best Sellers</a></li>
+              <li><a href="/collections/bracelet-collection">Bracelets</a></li>
+            {% endfor %}
+          </ul>
+        </section>
+        <section>
+          <h2>Navigation</h2>
+          <ul>
+            {% for item in footer_nav %}
+              <li><a href="{{ local_url(item.local_path) }}">{{ item.label }}</a></li>
+            {% else %}
+              <li><a href="/">Home</a></li>
+              <li><a href="/apps/trackingmore">Track Your Order</a></li>
+            {% endfor %}
+          </ul>
+        </section>
+      </div>
+    </footer>
+  </body>
+</html>

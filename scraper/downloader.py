@@ -20,6 +20,7 @@ from scraper.parser import absolute_url
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 STATIC_ROOT = PROJECT_ROOT / "static"
+MAX_FILENAME_STEM_LENGTH = 56
 DEFAULT_HEADERS = {
     "User-Agent": (
         "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
@@ -218,7 +219,7 @@ class AssetDownloader:
         """Build a deterministic local path under static/."""
 
         basename = Path(unquote(urlparse(url).path)).stem
-        safe_name = re.sub(r"[^a-zA-Z0-9._-]+", "-", basename).strip("-") or "asset"
+        safe_name = self.safe_filename_stem(basename)
         filename = f"{safe_name}-{sha256[:12]}{extension}"
         folder = {
             "css": "css/downloaded",
@@ -228,6 +229,16 @@ class AssetDownloader:
             "image": "images",
         }.get(asset_type, "assets")
         return Path("static") / folder / filename
+
+    def safe_filename_stem(self, value: str) -> str:
+        """Return a short, Windows-safe filename stem for downloaded assets."""
+
+        safe_name = re.sub(r"[^a-zA-Z0-9._-]+", "-", value).strip("-. ") or "asset"
+        if len(safe_name) > MAX_FILENAME_STEM_LENGTH:
+            safe_name = safe_name[:MAX_FILENAME_STEM_LENGTH].rstrip("-. ")
+        if safe_name.upper() in {"CON", "PRN", "AUX", "NUL", "COM1", "LPT1"}:
+            safe_name = f"asset-{safe_name.lower()}"
+        return safe_name or "asset"
 
     def image_dimensions(self, content: bytes, asset_type: str) -> tuple[int | None, int | None]:
         """Read image dimensions with Pillow when possible."""
